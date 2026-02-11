@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Risk Assessment System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .form-section {
+            padding: 40px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #999;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .results-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            display: none;
+            color: white;
+        }
+
+        .results-section.show {
+            display: block;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .results-header h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .result-card h3 {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .result-card .value {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .result-card .percentage {
+            font-size: 1em;
+            opacity: 0.8;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid white;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #ff4444;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .risk-indicator {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .risk-low {
+            background: #4CAF50;
+        }
+
+        .risk-medium {
+            background: #FF9800;
+        }
+
+        .risk-high {
+            background: #f44336;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .form-section {
+                padding: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-container {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            margin-left: 5px;
+            color: #667eea;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 220px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -110px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.85em;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏦 Loan Risk Assessment System</h1>
+            <p>Advanced Machine Learning-Based Credit Risk Analysis</p>
+        </div>
+
+        <div class="main-card">
+            <div class="form-section">
+                <div class="error-message" id="errorMessage"></div>
+
+                <form id="loanForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="loan_amnt">
+                                Loan Amount ($)
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">The total amount of money requested for the loan</span>
+                                </span>
+                            </label>
+                            <input type="number" id="loan_amnt" name="loan_amnt" step="0.01" required placeholder="e.g., 25000.00">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="term">Loan Term</label>
+                            <select id="term" name="term" required>
+                                <option value="">Select Term</option>
+                                <option value=" 3 months">3 months</option>
+                                <option value=" 6 months">6 months</option>
+                                <option value=" 9 months">9 months</option>
+                                <option value=" 12 months">12 months</option>
+                                <option value=" 18 months">18 months</option>
+                                <option value=" 24 months">24 months</option>
+                                <option value=" 36 months">36 months</option>
+                                <option value=" 60 months">60 months</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="installment">
+                                Monthly Installment ($)
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">Monthly payment amount</span>
+                                </span>
+                            </label>
+                            <input type="number" id="installment" name="installment" step="0.01" required placeholder="e.g., 450.00">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="annual_inc">Annual Income ($)</label>
+                            <input type="number" id="annual_inc" name="annual_inc" step="0.01" required placeholder="e.g., 100000.00">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="emp_length">Employment Length</label>
+                            <select id="emp_length" name="emp_length" required>
+                                <option value="">Select Employment Length</option>
+                                <option value="< 1 year">Less than 1 year</option>
+                                <option value="1 year">1 year</option>
+                                <option value="2 years">2 years</option>
+                                <option value="3 years">3 years</option>
+                                <option value="4 years">4 years</option>
+                                <option value="5 years">5 years</option>
+                                <option value="6 years">6 years</option>
+                                <option value="7 years">7 years</option>
+                                <option value="8 years">8 years</option>
+                                <option value="9 years">9 years</option>
+                                <option value="10+ years">10+ years</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="home_ownership">Home Ownership Status</label>
+                            <select id="home_ownership" name="home_ownership" required>
+                                <option value="">Select Status</option>
+                                <option value="RENT">Rent</option>
+                                <option value="MORTGAGE">Mortgage</option>
+                                <option value="OWN">Own</option>
+                                <option value="OTHER">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="verification_status">Income Verification Status</label>
+                            <select id="verification_status" name="verification_status" required>
+                                <option value="">Select Status</option>
+                                <option value="Verified">Verified</option>
+                                <option value="Not Verified">Not Verified</option>
+                                <option value="Source Verified">Source Verified</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="issue_d">
+                                Loan Issue Date
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">Select the month and year from the calendar</span>
+                                </span>
+                            </label>
+                            <input type="month" id="issue_d" name="issue_d" required min="2000-01" max="2030-12">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="purpose">Loan Purpose</label>
+                            <select id="purpose" name="purpose" required>
+                                <option value="">Select Purpose</option>
+                                <option value="debt_consolidation">Debt Consolidation</option>
+                                <option value="credit_card">Credit Card</option>
+                                <option value="home_improvement">Home Improvement</option>
+                                <option value="other">Other</option>
+                                <option value="major_purchase">Major Purchase</option>
+                                <option value="small_business">Small Business</option>
+                                <option value="car">Car</option>
+                                <option value="medical">Medical</option>
+                                <option value="moving">Moving</option>
+                                <option value="vacation">Vacation</option>
+                                <option value="house">House</option>
+                                <option value="wedding">Wedding</option>
+                                <option value="renewable_energy">Renewable Energy</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dti">
+                                Debt-to-Income Ratio (%)
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">Total monthly debt / monthly income</span>
+                                </span>
+                            </label>
+                            <input type="number" id="dti" name="dti" step="0.01" required placeholder="e.g., 25.0">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="delinq_2yrs">
+                                Delinquencies (Last 2 Years)
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">Number of 30+ days past-due incidences</span>
+                                </span>
+                            </label>
+                            <input type="number" id="delinq_2yrs" name="delinq_2yrs" min="0" required placeholder="e.g., 1">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="earliest_cr_line">
+                                Earliest Credit Line
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">Select the month and year from the calendar</span>
+                                </span>
+                            </label>
+                            <input type="month" id="earliest_cr_line" name="earliest_cr_line" required min="1950-01" max="2030-12">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fico_range_low">
+                                FICO Score (Lower Range)
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">Credit score (300-850)</span>
+                                </span>
+                            </label>
+                            <input type="number" id="fico_range_low" name="fico_range_low" min="300" max="850" required placeholder="e.g., 720">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pub_rec">
+                                Public Records
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">Number of derogatory public records</span>
+                                </span>
+                            </label>
+                            <input type="number" id="pub_rec" name="pub_rec" min="0" required placeholder="e.g., 0">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="revol_util">
+                                Revolving Utilization (%)
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">Amount of credit used relative to total credit</span>
+                                </span>
+                            </label>
+                            <input type="number" id="revol_util" name="revol_util" step="0.01" required placeholder="e.g., 60.0">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bc_util">
+                                Bankcard Utilization (%)
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">Ratio of credit used to available credit on bankcards</span>
+                                </span>
+                            </label>
+                            <input type="number" id="bc_util" name="bc_util" step="0.01" required placeholder="e.g., 70.0">
+                        </div>
+                    </div>
+
+                    <div class="btn-container">
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset Form</button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">Analyze Loan Risk</button>
+                    </div>
+                </form>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p style="margin-top: 15px; color: #667eea; font-weight: 600;">Analyzing loan application...</p>
+                </div>
+            </div>
+
+            <div class="results-section" id="results">
+                <div class="results-header">
+                    <h2>📊 Risk Assessment Results</h2>
+                    <p>Comprehensive analysis of loan default probability and expected losses</p>
+                </div>
+
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h3>Default Probability</h3>
+                        <div class="value" id="prob_default">-</div>
+                        <div class="percentage" id="prob_default_pct">-</div>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>Expected Loss</h3>
+                        <div class="value" id="expected_loss">-</div>
+                        <div class="percentage">If default occurs</div>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>Loss Amount</h3>
+                        <div class="value" id="loss_amount">-</div>
+                        <div class="percentage">Potential loss if default</div>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>Expected Loss Ratio</h3>
+                        <div class="value" id="el_ratio">-</div>
+                        <div class="percentage">% of loan amount</div>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>Installment to Income</h3>
+                        <div class="value" id="inst_ratio">-</div>
+                        <div class="percentage">% of monthly income</div>
+                    </div>
+                </div>
+
+                <div id="risk_description_container" style="margin-top: 20px; padding: 25px; background: rgba(255,255,255,0.1); border-radius: 10px; display: none;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                        <h3 style="color: white; margin: 0;">📋 Risk Analysis</h3>
+                        <div id="risk_indicator" style="margin: 0;"></div>
+                    </div>
+                    <div id="risk_description" style="color: white; font-size: 1.05em; line-height: 1.8; white-space: pre-line;"></div>
+                </div>
+
+                <div id="warnings_container" style="margin-top: 20px; display: none;">
+                    <h3 style="color: white; margin-bottom: 15px;">⚠️ Risk Factors Detected</h3>
+                    <ul id="warnings_list" style="color: white; font-size: 1em; line-height: 1.8; list-style-type: none; padding: 0;"></ul>
+                </div>
+
+                <div class="btn-container" style="margin-top: 30px;">
+                    <button type="button" class="btn btn-secondary" onclick="newAnalysis()" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white;">
+                        New Analysis
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Helper function to convert date format from YYYY-MM to MMM-YYYY
+        function convertDateFormat(dateStr) {
+            if (!dateStr) return '';
+            const [year, month] = dateStr.split('-');
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            return `${monthNames[parseInt(month) - 1]}-${year}`;
+        }
+
+        // Load example data
+        function loadExampleData() {
+            document.getElementById('loan_amnt').value = '25000.00';
+            document.getElementById('term').value = ' 60 months';
+            document.getElementById('installment').value = '450.00';
+            document.getElementById('emp_length').value = '10+ years';
+            document.getElementById('home_ownership').value = 'MORTGAGE';
+            document.getElementById('annual_inc').value = '100000.00';
+            document.getElementById('verification_status').value = 'Not Verified';
+            document.getElementById('issue_d').value = '2016-01';
+            document.getElementById('purpose').value = 'credit_card';
+            document.getElementById('dti').value = '25.0';
+            document.getElementById('delinq_2yrs').value = '1';
+            document.getElementById('earliest_cr_line').value = '2000-03';
+            document.getElementById('fico_range_low').value = '720';
+            document.getElementById('pub_rec').value = '0';
+            document.getElementById('revol_util').value = '60.0';
+            document.getElementById('bc_util').value = '70.0';
+        }
+
+        // Load example data on page load
+        window.addEventListener('DOMContentLoaded', (event) => {
+            loadExampleData();
+        });
+
+        // Form submission
+        document.getElementById('loanForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Hide error message
+            document.getElementById('errorMessage').classList.remove('show');
+            
+            // Show loading
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('submitBtn').disabled = true;
+            
+            // Collect form data
+            const formData = {
+                loan_amnt: document.getElementById('loan_amnt').value,
+                term: document.getElementById('term').value,
+                installment: document.getElementById('installment').value,
+                emp_length: document.getElementById('emp_length').value,
+                home_ownership: document.getElementById('home_ownership').value,
+                annual_inc: document.getElementById('annual_inc').value,
+                verification_status: document.getElementById('verification_status').value,
+                issue_d: convertDateFormat(document.getElementById('issue_d').value),
+                purpose: document.getElementById('purpose').value,
+                dti: document.getElementById('dti').value,
+                delinq_2yrs: document.getElementById('delinq_2yrs').value,
+                earliest_cr_line: convertDateFormat(document.getElementById('earliest_cr_line').value),
+                fico_range_low: document.getElementById('fico_range_low').value,
+                pub_rec: document.getElementById('pub_rec').value,
+                revol_util: document.getElementById('revol_util').value,
+                bc_util: document.getElementById('bc_util').value
+            };
+            
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayResults(data.results);
+                } else {
+                    showError(data.error || 'An error occurred during prediction');
+                }
+            } catch (error) {
+                showError('Failed to connect to the server. Please try again.');
+            } finally {
+                document.getElementById('loading').classList.remove('show');
+                document.getElementById('submitBtn').disabled = false;
+            }
+        });
+
+        function displayResults(results) {
+            // Format and display results
+            document.getElementById('prob_default').textContent = results.probability_of_default.toFixed(4);
+            document.getElementById('prob_default_pct').textContent = `${(results.probability_of_default * 100).toFixed(2)}%`;
+            document.getElementById('expected_loss').textContent = `$${results.expected_loss.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;            document.getElementById('loss_amount').textContent = `$${results.loss_amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('el_ratio').textContent = `${(results.el_to_loan_ratio * 100).toFixed(4)}%`;
+            document.getElementById('inst_ratio').textContent = `${(results.inst_to_income_ratio * 100).toFixed(4)}%`;
+            
+            // Use risk level from backend
+            const riskLevel = results.risk_level || 'Unknown';
+            let riskClass;
+            if (riskLevel === 'Low Risk') {
+                riskClass = 'risk-low';
+            } else if (riskLevel === 'Medium Risk') {
+                riskClass = 'risk-medium';
+            } else {
+                riskClass = 'risk-high';
+            }
+            
+            // Display risk indicator in the risk analysis section
+            document.getElementById('risk_indicator').innerHTML = `<span class="risk-indicator ${riskClass}">${riskLevel}</span>`;
+            
+            // Display risk description
+            if (results.risk_description) {
+                document.getElementById('risk_description').textContent = results.risk_description;
+                document.getElementById('risk_description_container').style.display = 'block';
+            } else {
+                document.getElementById('risk_description_container').style.display = 'none';
+            }
+            
+            // Display warnings
+            if (results.warnings && results.warnings.length > 0) {
+                const warningsList = document.getElementById('warnings_list');
+                warningsList.innerHTML = '';
+                results.warnings.forEach(warning => {
+                    const li = document.createElement('li');
+                    li.style.cssText = 'background: rgba(255,200,0,0.2); padding: 12px 15px; margin-bottom: 10px; border-radius: 8px; border-left: 4px solid #ffc107;';
+                    li.textContent = warning;
+                    warningsList.appendChild(li);
+                });
+                document.getElementById('warnings_container').style.display = 'block';
+            } else {
+                document.getElementById('warnings_container').style.display = 'none';
+            }
+            
+            // Show results section
+            document.getElementById('results').classList.add('show');
+            
+            // Scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            errorDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetForm() {
+            document.getElementById('loanForm').reset();
+            document.getElementById('results').classList.remove('show');
+            document.getElementById('errorMessage').classList.remove('show');
+            loadExampleData();
+        }
+
+        function newAnalysis() {
+            document.getElementById('results').classList.remove('show');
+            document.getElementById('loanForm').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
