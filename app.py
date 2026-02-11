@@ -66,6 +66,27 @@ from custom_func_and_class import (
     bin_fico_range_low, binarize_revol_util, binarize_bc_util, apply_log1p_df,
     transform_home_ownership, transform_purpose
 )
+import __main__
+__main__.PredictProbaTransformer = PredictProbaTransformer
+__main__.RegPredictProbaTransformer = RegPredictProbaTransformer
+__main__.IntRatePredictProbaTransformer = IntRatePredictProbaTransformer
+__main__.NewFeatureGenerator = NewFeatureGenerator
+__main__.NewFeatureAddingTransformer = NewFeatureAddingTransformer
+__main__.OutlierCapper = OutlierCapper
+__main__.TermTransformer = TermTransformer
+__main__.IssueDTransformer = IssueDTransformer
+__main__.EmpLengthTransformer = EmpLengthTransformer
+__main__.EarliestCrLineTransformer = EarliestCrLineTransformer
+__main__.ColumnDroppingTransformer = ColumnDroppingTransformer
+__main__.bin_pub_rec = bin_pub_rec
+__main__.bin_emp_length = bin_emp_length
+__main__.bin_delinq_2yrs = bin_delinq_2yrs
+__main__.bin_fico_range_low = bin_fico_range_low
+__main__.binarize_revol_util = binarize_revol_util
+__main__.binarize_bc_util = binarize_bc_util
+__main__.apply_log1p_df = apply_log1p_df
+__main__.transform_home_ownership = transform_home_ownership
+__main__.transform_purpose = transform_purpose
 
 # Additional compatibility patches for custom classes
 for cls in [PredictProbaTransformer, RegPredictProbaTransformer, IntRatePredictProbaTransformer,
