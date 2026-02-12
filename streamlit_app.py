@@ -70,11 +70,11 @@ def load_models():
 
     if not os.path.exists(CLASS_MODEL_PATH):
         st.info("Downloading classification model...")
-        s3.download_file(bucket_name, "final_inference_pipeline.pkl", CLASS_MODEL_PATH)
+        s3.download_file(bucket_name, "models/final_inference_pipeline.pkl", CLASS_MODEL_PATH)
 
     if not os.path.exists(REG_MODEL_PATH):
         st.info("Downloading regression model...")
-        s3.download_file(bucket_name, "reg_finalInference_pipeline.pkl", REG_MODEL_PATH)
+        s3.download_file(bucket_name, "models/reg_finalInference_pipeline.pkl", REG_MODEL_PATH)
 
     st.info("Loading models into memory...")
     clf_model = joblib.load(CLASS_MODEL_PATH)
